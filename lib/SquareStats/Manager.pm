@@ -5,10 +5,10 @@ use Moose;
 use Method::Signatures;
 use Moose::Util::TypeConstraints;
 use MooseX::Types::JSON qw/ JSON /;
+use JSON::XS;
 
 # ABSTRACT: the Manager listens for events from the assaultcube server, and
 #           notifies the loaded plugins of each event.
-#
 use ZMQx::Class;
 use AnyEvent;
 with 'MooseX::Role::Pluggable';
@@ -30,9 +30,19 @@ method _build_zmq_subscriber() {
         return ZMQx::Class->socket('SUB', connect => $self->endpoint);
 }
 
-method on_recv_json(JSON $json) {
-        # Process the JSON into an event 
+method emit_event(Str $event, HashRef $data) {
+        my $method = "on_$event";
+        foreach my $plugin (@{ $self->plugin_list }) {
+                if($plugin->can($method)) {
+                        $plugin->$method($data);
+                }
+        }
 }
+
+# TODO: Catch exception from invalid JSON
+method on_recv_json(JSON $json) {
+}
+
 
 method run() {
         # Run the manager!
