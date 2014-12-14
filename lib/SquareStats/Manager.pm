@@ -43,10 +43,20 @@ with MooseX::Role::Pluggable
                 $self->emit_event($data->{'type'}, $data);
         }
         
-        
-        method run() {
-                # Run the manager!
-        };
+        # Initialise the subscriber socket
+        method subscribe() {
+                my $sub = $self->zmq_subscriber();
+
+                # Subscribe to all messages, i.e. no filtering
+                $sub->subscribe('');
+
+                # Setup the on-receive-message event callback
+                $sub->anyevent_watcher( sub {
+                        while ( my $msg = $sub->receive ) {
+                                $self->on_recv_json($msg->[0]);
+                        }
+                });
+        }
         
         
 }
