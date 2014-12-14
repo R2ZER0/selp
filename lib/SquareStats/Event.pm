@@ -22,7 +22,7 @@ role SquareStats::Event {
         
         # Deserialise the json, inspect the type, create and return a
         # relevant SquareStats::Event::* object (class method).
-        method from_json($class: JSON $json) {
+        method new_from_json($class: JSON $json) {
                 my $data = decode_json $json;
                 my $type = $data->{'type'};
                 undef $data->{'type'};
