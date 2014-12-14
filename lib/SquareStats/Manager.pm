@@ -9,6 +9,23 @@ with MooseX::Role::Pluggable
         use ZMQx::Class;
         use MooseX::Types::JSON qw/ JSON /;
         use JSON::XS;
+        use TryCatch;
+
+        # Register events and start the mainloop
+        method run() {
+                $self->plugin_run_method('run');
+                $self->subscribe(); # subscribe to events from the AC server
+
+                $self->_exit_condvar->recv; # run the event loop
+
+                $self->finish;
+        }
+
+        # Notify the plugins that we are stopping
+        method finish() {
+                $self->plugin_run_method('finish');
+                # DBIx::Class automagically cleans up the sockets etc for us
+        }
          
         
         has 'endpoint' => (
@@ -17,18 +34,13 @@ with MooseX::Role::Pluggable
                 required => 1,
         );
         
-        has 'zmq_subscriber' => (
+        has '_exit_condvar' => (
                 is => 'ro',
-                lazy => 1,
-                builder => '_build_zmq_subscriber',
-                isa => 'ZMQx::Class::Socket',
+                isa => 'AnyEvent::CondVar',
+                default => sub { AnyEvent->condvar },
         );
         
-        method _build_zmq_subscriber() {
-                return ZMQx::Class->socket('SUB', connect => $self->endpoint);
-        }
-        
-        method emit_event(Str $event, HashRef $data) {
+        method _emit_event(Str $event, HashRef $data) {
                 my $method = "on_$event";
                 foreach my $plugin (@{ $self->plugin_list }) {
                         if($plugin->can($method)) {
@@ -37,15 +49,14 @@ with MooseX::Role::Pluggable
                 }
         }
         
-        # TODO: Catch exception from invalid JSON
-        method on_recv_json(JSON $json) {
+        method _on_recv_json(JSON $json) {
                 my $data = decode_json $json;
                 $self->emit_event($data->{'type'}, $data);
         }
         
         # Initialise the subscriber socket
-        method subscribe() {
-                my $sub = $self->zmq_subscriber();
+        method _subscribe() {
+                my $sub = ZMQx::Class->socket('SUB', connect => $self->endpoint);
 
                 # Subscribe to all messages, i.e. no filtering
                 $sub->subscribe('');
@@ -53,7 +64,10 @@ with MooseX::Role::Pluggable
                 # Setup the on-receive-message event callback
                 $sub->anyevent_watcher( sub {
                         while ( my $msg = $sub->receive ) {
-                                $self->on_recv_json($msg->[0]);
+                                try { $self->on_recv_json($msg->[0]); }
+                                catch {
+                                        # Received invalid JSON, TODO: Logging
+                                }
                         }
                 });
         }
