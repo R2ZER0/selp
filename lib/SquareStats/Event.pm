@@ -4,13 +4,26 @@ use Method::Signatures;
 use MooseX::Types::JSON qw/ JSON /;
 use JSON::XS;
 
+has 'type' => (
+        is => 'ro',
+        isa => 'Str',
+        required => 1
+);
+
+# Serialise this event as JSON
 method to_json() {
-        # TODO: Serialise as JSON
+        # TODO
 }
 
+# Deserialise the json, inspect the type, create and return a relevant
+# SquareStats::Event::* object.
 func from_json(JSON $json) {
-        # TODO: Search namespace for correct object, and create it.
+        # TODO
 }
 
+# Return a list of supported event types
+func supported_events() {
+        # TODO
+}
 
 1;
