@@ -41,6 +41,8 @@ method emit_event(Str $event, HashRef $data) {
 
 # TODO: Catch exception from invalid JSON
 method on_recv_json(JSON $json) {
+        my $data = decode_json $json;
+        $self->emit_event($data->{'type'}, $data);
 }
 
 
