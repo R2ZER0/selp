@@ -1,6 +1,8 @@
 package Test::SquareStats::Event;
 use Test::Class::Moose;
 use MooseX::Test::Role;
+use Test::Deep qw/cmp_deeply/;
+
 use SquareStats::Event;
 
 my $role = 'SquareStats::Event';
@@ -19,6 +21,14 @@ sub test_has_consumer_methods : Tests(1) {
 
 sub test_requires : Tests(1) {
         requires_ok $role, 'type';
+}
+
+sub test_finds_event_classes : Tests(1) {
+        cmp_deeply(
+                \@SquareStats::Event::_found_classes,
+                ['SquareStats::Event::Kill'],
+                "succesfully finds event classes"
+        );
 }
 
 1;
