@@ -4,9 +4,13 @@ use Method::Signatures::Modifiers;
 role SquareStats::Event {
         use MooseX::Types::JSON qw/ JSON /;
         use JSON::XS;
+        use Module::Find;
+
+        # Find all the available SquareStats::Event::* modules
+        our @_found_modules = usesub SquareStats::Event;
         
         # Consumers must implement this method which returns the type
-        # that it supports.
+        # that it supports as a string.
         requires 'type';
         
         # Serialise this event as JSON
@@ -20,8 +24,9 @@ role SquareStats::Event {
                 # TODO
         }
         
-        # Return a list of supported event types (class method).
+        # Return an arrayref of supported event types (class method).
         method supported_events($class:) {
-                # TODO
+                my @events = map { $_->type } @_found_modules;
+                return \@events;
         }
 }
