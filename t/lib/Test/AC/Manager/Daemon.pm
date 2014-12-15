@@ -39,7 +39,7 @@ class Test::AC::Manager::Daemon {
             
         # Create test config file
         open CONFIG, '>', $config_file;
-        print CONFIG "endpoint: $endpoint";
+        print CONFIG "endpoint: $endpoint\n";
         
         ok( -e $config_file, "$config_file exists" );
         
