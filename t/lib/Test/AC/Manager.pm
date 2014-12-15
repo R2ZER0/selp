@@ -47,5 +47,32 @@ class Test::AC::Manager {
         ok($plugin->finish_called, 'finish called');        
         
         # Test that it propagates events to our plugin
+        my $kill_event_json = q{{
+            "type": "kill",
+            "killer": "killer",
+            "victim": "victim",
+            "weapon": "shotgun",
+            "time": 12345,
+            "gib": false,
+            "suicide": false
+        }};
+        
+        # Wait up to 10 seconds for our event to be fired
+        my $waiting = 1;
+        
+        my $w2; $w2 = AnyEvent->timer(after => 10, cb => sub {
+            $waiting = 0;
+            undef $w2;
+        });
+        
+        my $w3; $w3 = AnyEvent->idle(cb => sub {
+            if($plugin->on_kill_called or (not $waiting)) {
+                ok($plugin->on_event_called, 'on_kill event passed to plugin');
+                undef $w3;
+            }
+        });
+        
+        $pub->send($kill_event_json);
+        
     }
 }
