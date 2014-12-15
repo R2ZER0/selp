@@ -7,27 +7,32 @@ with MooseX::Getopt
         use AC::Manager;
         with 'MooseX::Daemonize';
 
-        has '_manager' => (
-                is => 'rw',
-                isa => 'AC::Manager',
-        );
-
         has 'configfile' => (
                 is => 'ro',
                 isa => 'Str',
                 default => '/etc/ac-manager.yaml',
         );
+        
+        has '_manager' => (
+                is => 'ro',
+                isa => 'AC::Manager',
+                lazy => 1,
+                builder => '_build_manager',
+        );
+        
+        method _build_manager() {
+                return AC::Manager->new_with_config(
+                        configfile => $self->configfile
+                );
+        }
 
         after start() {
                 return unless $self->is_daemon;
                 
-                $self->_manager(AC::Manager->new_with_config(
-                    configfile => $self->configfile
-                ));
-                $self->_manager->run();
+                $self->_manager()->run();
         }
 
         before stop() {
-                $self->_manager->finish();
+                $self->_manager()->finish();
         }
 }
