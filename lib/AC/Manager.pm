@@ -13,23 +13,23 @@ with MooseX::SimpleConfig
         use JSON::XS;
         use TryCatch;
 
+        # Method used to start the manager
         # Register events and start the mainloop
         method run() {
                 $self->plugin_run_method('run');
-                $self->subscribe(); # subscribe to events from the AC server
+                $self->_subscribe(); # subscribe to events from the AC server
 
                 $self->_exit_condvar->recv; # run the event loop
 
-                $self->finish;
+                $self->_on_finish;
         }
-
-        # Notify the plugins that we are stopping
-        method finish() {
-                $self->plugin_run_method('finish');
-                # DBIx::Class automagically cleans up the sockets etc for us
-        }
-         
         
+        # Method used to stop the manager
+        method finish() {
+            $self->_exit_condvar->send;
+        }
+        
+        # Required parameter: ZMQ endpoint to connect to
         has 'endpoint' => (
                 is => 'ro',
                 isa => 'Str',
@@ -42,19 +42,10 @@ with MooseX::SimpleConfig
                 default => sub { AnyEvent->condvar },
         );
         
-        method _emit_event(Str $event, HashRef $data) {
-                my $method = "on_$event";
-                foreach my $plugin (@{ $self->plugin_list }) {
-                        if($plugin->can($method)) {
-                                $plugin->$method($data);
-                        }
-                }
-        }
-        
-        method _on_recv_json(JSON $json) {
-                my $data = decode_json $json;
-                $self->emit_event($data->{'type'}, $data);
-        }
+        has '_subscriber' => (
+                is => 'rw',
+                isa => 'ZMQx::Class::Socket',
+        );
         
         # Initialise the subscriber socket
         method _subscribe() {
@@ -72,9 +63,30 @@ with MooseX::SimpleConfig
                                 }
                         }
                 });
+                
+                $self->_subscriber( $sub );
         }
         
+        method _on_recv_json(JSON $json) {
+                my $data = decode_json $json;
+                $self->emit_event($data->{'type'}, $data);
+        }
         
+        method _emit_event(Str $event, HashRef $data) {
+                my $method = "on_$event";
+                foreach my $plugin (@{ $self->plugin_list }) {
+                        if($plugin->can($method)) {
+                                $plugin->$method($data);
+                        }
+                }
+        }
+        
+        # Notify the plugins that we are stopping
+        method _on_finish() {
+                $self->_subscriber->close();
+                $self->plugin_run_method('finish');
+                # DBIx::Class automagically cleans up the sockets etc for us
+        }       
 }
 
 1;
