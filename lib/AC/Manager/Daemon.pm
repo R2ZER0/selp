@@ -27,6 +27,8 @@ with MooseX::Getopt
                 builder => '_build_manager',
         );
         
+        # We have a lazy manager so that it will only be created once the daemon
+        # has finished forking.
         method _build_manager() {
                 return AC::Manager->new_with_config(
                         configfile => $self->configfile
