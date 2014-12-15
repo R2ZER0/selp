@@ -22,7 +22,7 @@ class Test::AC::Manager {
     use JSON::XS;
     
     method test_manager($class: ...) {
-        $class->test_report->plan(5);
+        $class->test_report->plan(4);
         
         # First create a test ZMQ publisher, so we can send events
         my $pub = ZMQx::Class->socket('PUB', bind => 'tcp://*:*');
@@ -47,9 +47,24 @@ class Test::AC::Manager {
         $man->run();
         
         ok($plugin->run_called, 'run called');
-        ok($plugin->finish_called, 'finish called');        
+        ok($plugin->finish_called, 'finish called');                
+    }
+    
+    method test_zmq_events($class: ...) {
+        $class->test_report->plan(1);
+    
+        # First create a test ZMQ publisher, so we can send events
+        my $pub = ZMQx::Class->socket('PUB', bind => 'tcp://*:*');
+        my $endpoint = $pub->getsockopt(ZMQ_LAST_ENDPOINT);
+    
+         #### Test that it propagates events to our plugin ####
+        my $man = AC::Manager->new(
+            endpoint => $endpoint,
+            plugins => ['+Test::AC::Manager_Plugin'],
+        );
         
-        #### Test that it propagates events to our plugin ####
+        my $plugin = $man->plugin_list->[0];
+        
         my $kill_event_json = encode_json {
             "type" => "kill",
             "killer" => "killer",
@@ -82,6 +97,5 @@ class Test::AC::Manager {
         });
         
         $man->run();
-        
     }
 }
