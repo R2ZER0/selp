@@ -19,6 +19,7 @@ class Test::AC::Manager {
     use ZMQ::Constants qw/ZMQ_LAST_ENDPOINT ZMQ_DONTWAIT/;
     use AC::Manager;
     use AnyEvent;
+    use JSON::XS;
     
     method test_manager($class: ...) {
         $class->test_report->plan(5);
@@ -54,15 +55,15 @@ class Test::AC::Manager {
             plugins => ['+Test::AC::Manager_Plugin'],
         );
         
-        my $kill_event_json = q{{
-            "type": "kill",
-            "killer": "killer",
-            "victim": "victim",
-            "weapon": "shotgun",
-            "time": 12345,
-            "gib": false,
-            "suicide": false
-        }};
+        my $kill_event_json = encode_json {
+            "type" => "kill",
+            "killer" => "killer",
+            "victim" => "victim",
+            "weapon" => "shotgun",
+            "time" => 12345,
+            "gib" => 1,
+            "suicide" => 1
+        };
         
         # Wait up to 10 seconds for our event to be fired
         my $waiting = 1;

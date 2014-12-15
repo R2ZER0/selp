@@ -70,9 +70,9 @@ with MooseX::SimpleConfig
                 $self->_watcher( $watcher );
         }
         
-        method _on_recv_json(JSON $json) {
+        method _on_recv_json(Str $json) {
                 my $data = decode_json $json;
-                $self->emit_event($data->{'type'}, $data);
+                $self->_emit_event($data->{'type'}, $data);
         }
         
         method _emit_event(Str $event, HashRef $data) {
