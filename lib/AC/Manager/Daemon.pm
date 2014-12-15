@@ -1,16 +1,16 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class SquareStats::Manager::Daemon
+class AC::Manager::Daemon
 with MooseX::Getopt
 {
-        use SquareStats::Manager;
+        use AC::Manager;
         use MooseX::Types::Path::Class;
         with 'MooseX::Daemonize';
 
         has '_manager' => (
                 is => 'ro',
-                isa => 'SquareStats::Manager',
+                isa => 'AC::Manager',
                 lazy => 1,
                 builder => '_build_manager',
         );
@@ -24,7 +24,7 @@ with MooseX::Getopt
                 
 
         method _build_manager() {
-                return SquareStats::Manager->new_with_config(configfile => $self->configfile);
+                return AC::Manager->new_with_config(configfile => $self->configfile);
         }
 
         after start() {

@@ -1,19 +1,19 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Test::SquareStats::Mananger::Plugin::Base {
+class Test::AC::Mananger::Plugin::Base {
         use Test::Class::Moose;
         use TryCatch;
-        use SquareStats::Manager::Plugin::Base;
+        use AC::Manager::Plugin::Base;
 
-        my $class = 'SquareStats::Manager::Plugin::Base';
+        my $class = 'AC::Manager::Plugin::Base';
 
         method test_constructor() {
                 my $success = 1;
                 my $obj;
 
                 try {
-                        $obj = SquareStats::Manager::Plugin::Base->new();
+                        $obj = AC::Manager::Plugin::Base->new();
                 } catch {
                         $success = 0;
                 }

@@ -3,7 +3,7 @@ use Method::Signatures::Modifiers;
 
 # ABSTRACT: the Manager listens for events from the assaultcube server, and
 #           notifies the loaded plugins of each event.
-class SquareStats::Manager
+class AC::Manager
 with MooseX::Role::Pluggable
 with MooseX::SimpleConfig
 {

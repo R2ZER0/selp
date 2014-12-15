@@ -2,7 +2,7 @@ use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
 # ABSTRACT: A base Manager::Plugin that does nothing
-class SquareStats::Manager::Plugin::Base
+class AC::Manager::Plugin::Base
 with MooseX::Role::Pluggable::Plugin
 {
         method run() {
