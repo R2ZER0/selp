@@ -8,28 +8,27 @@ class Test::AC::Mananger::Plugin::Base {
 
         my $class = 'AC::Manager::Plugin::Base';
 
-        method test_constructor() {
-                my $success = 1;
-
-                try {
-                        my $obj = AC::Manager::Plugin::Base->new();
-                } catch {
-                        $success = 0;
+        method test_constructor(...) {
+                my $plugin_harness = class 
+                with MooseX::Role::Pluggable
+                {
+                        # We use this anonymous class to load ::Plugin::Base,
+                        # as plugins cannot be instantiated in isolation.
                 }
-                ok($success, 'construction succeeds');
-        }
         
-        method test_class() {
-            my $obj = AC::Manager::Plugin::Base->new();
-            isa_ok $obj, $class;
+                my $plugin_harness_obj = $plugin_harness->new_object({
+                    plugins => [ '+AC::Manager::Plugin::Base' ],
+                });
+                
+                isa_ok( $plugin_harness_obj->plugin_list->[0], $class );
         }
 
-        method test_has_run_finish_methods() {
+        method test_has_run_finish_methods(...) {
                 can_ok $class, 'run';
                 can_ok $class, 'finish';
         }
 
-        method test_has_event_methods() {
+        method test_has_event_methods(...) {
                 can_ok $class, 'on_kill';
         }
 
