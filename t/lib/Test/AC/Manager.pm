@@ -10,7 +10,7 @@ with MooseX::Role::Pluggable::Plugin
     
     method run() { $self->run_called(1); }
     method finish() { $self->finish_called(1); }
-    method on_kill() { $self->on_kill_called(1); }
+    method on_kill($e) { $self->on_kill_called(1); }
 }
 
 class Test::AC::Manager {
