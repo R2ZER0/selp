@@ -1,0 +1,7 @@
+# Example config file for AC::Manager.
+# Currently the only option is endpoint, which specifies the ZMQ endpoint of
+# the AssaultCube server to connect to.
+endpoint: "tcp://localhost:27565"
+
+# This is a YAML file, and so must end with a newline.
+
