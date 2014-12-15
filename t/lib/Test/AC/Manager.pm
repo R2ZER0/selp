@@ -18,6 +18,7 @@ class Test::AC::Manager {
     use ZMQx::Class;
     use ZMQ::Constants qw/ZMQ_LAST_ENDPOINT/;
     use AC::Manager;
+    use AnyEvent;
     
     method test_manager($class: ...) {
         # First create a test ZMQ publisher, so we can send events
@@ -32,10 +33,18 @@ class Test::AC::Manager {
         ok($man, 'constructed manager');
     
         # Test that it successfully loads our plugin
-        isa_ok($man->plugin_list->[0], 'Test::AC::Manager_Plugin');
+        my $plugin = $man->plugin_list->[0];
+        isa_ok($plugin, 'Test::AC::Manager_Plugin');
         
         # Test that it calls run/finish on our plugin
+        my $w; $w = AnyEvent->idle(cb => sub {
+            $man->finish();
+            undef $w;
+        });
+        $man->run();
         
+        ok($plugin->run_called, 'run called');
+        ok($plugin->finish_called, 'finish called');        
         
         # Test that it propagates events to our plugin
     }
