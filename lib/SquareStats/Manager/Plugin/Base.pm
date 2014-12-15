@@ -1,4 +1,5 @@
-use SquareStats::Declare;
+use MooseX::Declare;
+use Method::Signatures::Modifiers;
 
 # ABSTRACT: A base Manager::Plugin that does nothing
 class SquareStats::Manager::Plugin::Base

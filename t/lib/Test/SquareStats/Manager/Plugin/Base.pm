@@ -1,4 +1,5 @@
-use SquareStats::Declare;
+use MooseX::Declare;
+use Method::Signatures::Modifiers;
 
 class Test::SquareStats::Mananger::Plugin::Base {
         use Test::Class::Moose;

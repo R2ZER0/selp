@@ -1,4 +1,5 @@
-use SquareStats::Declare;
+use MooseX::Declare;
+use Method::Signatures::Modifiers;
 
 # ABSTRACT: the Manager listens for events from the assaultcube server, and
 #           notifies the loaded plugins of each event.

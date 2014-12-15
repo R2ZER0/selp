@@ -1,4 +1,5 @@
-use SquareStats::Declare;
+use MooseX::Declare;
+use Method::Signatures::Modifiers;
 
 class SquareStats::Manager::Daemon
 with MooseX::Getopt
