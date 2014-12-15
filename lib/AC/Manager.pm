@@ -12,11 +12,16 @@ with MooseX::SimpleConfig
         use MooseX::Types::JSON qw/ JSON /;
         use JSON::XS;
         use TryCatch;
+        use Log::Any;
+        
+        our $log = Log::Any->get_logger(category => __PACKAGE__);
 
         # Method used to start the manager
         # Register events and start the mainloop
         method run() {
+                $log->debug('starting to run, calling to plugins');
                 $self->plugin_run_method('run');
+                
                 $self->_subscribe(); # subscribe to events from the AC server
 
                 $self->_exit_condvar->recv(); # run the event loop
@@ -47,6 +52,7 @@ with MooseX::SimpleConfig
                 isa => 'ZMQx::Class::Socket',
         );
         
+        # A watcher to watch the subscriber for incoming messages
         has '_watcher' => (
                 is => 'rw',
                 clearer => '_clear_watcher',
@@ -54,6 +60,7 @@ with MooseX::SimpleConfig
         
         # Initialise the subscriber socket
         method _subscribe() {
+                $log->debugf('subscribing to %s', $self->endpoint);
                 my $sub = ZMQx::Class->socket('SUB', connect => $self->endpoint);
 
                 # Subscribe to all messages, i.e. no filtering
