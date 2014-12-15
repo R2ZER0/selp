@@ -18,7 +18,7 @@ with MooseX::Getopt
         has 'configfile' => (
                 is => 'ro',
                 isa => 'Path::Class::File',
-                required => 1,
+                default => { '/etc/ac-manager.yaml' },
         );
 
         after start() {
