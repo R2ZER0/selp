@@ -47,6 +47,11 @@ with MooseX::SimpleConfig
                 isa => 'ZMQx::Class::Socket',
         );
         
+        has '_watcher' => (
+                is => 'rw',
+                clearer => '_clear_watcher',
+        );
+        
         # Initialise the subscriber socket
         method _subscribe() {
                 my $sub = ZMQx::Class->socket('SUB', connect => $self->endpoint);
@@ -55,16 +60,14 @@ with MooseX::SimpleConfig
                 $sub->subscribe('');
 
                 # Setup the on-receive-message event callback
-                $sub->anyevent_watcher( sub {
+                my $watcher = $sub->anyevent_watcher( sub {
                         while ( my $msg = $sub->receive ) {
-                                try { $self->on_recv_json($msg->[0]); }
-                                catch {
-                                        # Received invalid JSON, TODO: Logging
-                                }
+                                $self->_on_recv_json($msg->[0]);
                         }
                 });
                 
                 $self->_subscriber( $sub );
+                $self->_watcher( $watcher );
         }
         
         method _on_recv_json(JSON $json) {
@@ -84,8 +87,9 @@ with MooseX::SimpleConfig
         # Notify the plugins that we are stopping
         method _on_finish() {
                 $self->_subscriber->close();
+                $self->_clear_watcher();
                 $self->plugin_run_method('finish');
-                # DBIx::Class automagically cleans up the sockets etc for us
+                # ZMQx::Class automagically cleans up the sockets etc for us
         }       
 }
 

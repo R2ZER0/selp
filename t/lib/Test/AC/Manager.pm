@@ -16,7 +16,7 @@ with MooseX::Role::Pluggable::Plugin
 class Test::AC::Manager {
     use Test::Class::Moose;
     use ZMQx::Class;
-    use ZMQ::Constants qw/ZMQ_LAST_ENDPOINT/;
+    use ZMQ::Constants qw/ZMQ_LAST_ENDPOINT ZMQ_DONTWAIT/;
     use AC::Manager;
     use AnyEvent;
     
@@ -81,7 +81,7 @@ class Test::AC::Manager {
         });
         
         my $w4; $w4 = AnyEvent->idle(cb => sub {
-            $pub->send($kill_event_json);
+            $pub->send($kill_event_json, ZMQ_DONTWAIT);
             undef $w4;
         });
         
