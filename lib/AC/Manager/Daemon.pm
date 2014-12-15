@@ -41,6 +41,7 @@ with MooseX::Getopt
         }
 
         before stop() {
+                return unless $self->is_daemon;
                 $self->_manager()->finish();
         }
 }
