@@ -9,7 +9,7 @@ with MooseX::Getopt
         with 'MooseX::Daemonize';
 
         has '_manager' => (
-                is => 'ro',
+                is => 'rw',
                 isa => 'AC::Manager',
                 lazy => 1,
                 builder => '_build_manager',
@@ -20,18 +20,17 @@ with MooseX::Getopt
                 isa => 'Path::Class::File',
                 required => 1,
         );
-                
-
-        method _build_manager() {
-                return AC::Manager->new_with_config(configfile => $self->configfile);
-        }
 
         after start() {
                 return unless $self->is_daemon;
-                $self->run();
+                
+                $self->_manager(AC::Manager->new_with_config(
+                    configfile => $self->configfile
+                ));
+                $self->_manager->run();
         }
 
         before stop() {
-                $self->finish();
+                $self->_manager->finish();
         }
 }
