@@ -52,9 +52,8 @@ class Test::AC::Manager::Daemon {
         my $daemon_pid = $daemon->get_pid();
         
         $daemon->stop();
-        kill 'TERM', $child_pid;
-        waitpid $daemon->get_pid();
-        waitpid $child_pid;
+        Forks::Super::kill 'TERM', $child_pid;
+        waitall;
         
     }
     
