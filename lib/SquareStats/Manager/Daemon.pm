@@ -17,7 +17,7 @@ with MooseX::Getopt
         has 'configfile' => (
                 is => 'ro',
                 isa => 'Path::Class::File',
-                default => sub { "conf/sample-manager.yaml" },
+                required => 1,
                 description => 'path to configuration file',
         );
                 
