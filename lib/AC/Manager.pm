@@ -24,6 +24,7 @@ with MooseX::SimpleConfig
                 
                 $self->_subscribe(); # subscribe to events from the AC server
 
+                $log->debug('entering event loop');
                 $self->_exit_condvar->recv(); # run the event loop
 
                 $self->_on_finish();
@@ -31,6 +32,7 @@ with MooseX::SimpleConfig
         
         # Method used to stop the manager
         method finish() {
+            $log->debug('we have been asked to finish');
             $self->_exit_condvar->send();
         }
         
@@ -66,6 +68,7 @@ with MooseX::SimpleConfig
                 # Subscribe to all messages, i.e. no filtering
                 $sub->subscribe('');
 
+                $log->debug('successfully subscribed, starting watcher');
                 # Setup the on-receive-message event callback
                 my $watcher = $sub->anyevent_watcher( sub {
                         while ( my $msg = $sub->receive ) {
@@ -79,10 +82,12 @@ with MooseX::SimpleConfig
         
         method _on_recv_json(Str $json) {
                 my $data = decode_json $json;
+                $log->debugf('receieved json event of type %s', $data->{'type'});
                 $self->_emit_event($data->{'type'}, $data);
         }
         
         method _emit_event(Str $event, HashRef $data) {
+                $log->debug("emitting event of type $event");
                 my $method = "on_$event";
                 foreach my $plugin (@{ $self->plugin_list }) {
                         if($plugin->can($method)) {
@@ -93,8 +98,10 @@ with MooseX::SimpleConfig
         
         # Notify the plugins that we are stopping
         method _on_finish() {
+                $log->debug('finishing, closing subscriber');
                 $self->_subscriber->close();
                 $self->_clear_watcher();
+                $log->debug('giving plugins the finish signal');
                 $self->plugin_run_method('finish');
                 # ZMQx::Class automagically cleans up the sockets etc for us
         }       
