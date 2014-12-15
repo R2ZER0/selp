@@ -3,7 +3,7 @@ use Method::Signatures::Modifiers;
 
 class Test::AC::Mananger::Plugin::Base {
         use Test::Class::Moose;
-        use TryCatch;
+        use Try::Tiny;
         use AC::Manager::Plugin::Base;
 
         my $class = 'AC::Manager::Plugin::Base';
