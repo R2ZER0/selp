@@ -2,9 +2,9 @@
 use strict;
 use warnings;
 use lib '../lib';
-use SquareStats::Manager::Daemon;
+use AC::Manager::Daemon;
 
-my $daemon = SquareStats::Manager::Daemon->new_with_options();
+my $daemon = AC::Manager::Daemon->new_with_options();
  
 my ($command) = @{$daemon->extra_argv};
 defined $command || die "No command specified";
