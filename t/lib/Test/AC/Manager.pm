@@ -50,11 +50,6 @@ class Test::AC::Manager {
         ok($plugin->finish_called, 'finish called');        
         
         #### Test that it propagates events to our plugin ####
-        $man = AC::Manager->new(
-            endpoint => $endpoint,
-            plugins => ['+Test::AC::Manager_Plugin'],
-        );
-        
         my $kill_event_json = encode_json {
             "type" => "kill",
             "killer" => "killer",
