@@ -4,6 +4,7 @@ use Method::Signatures::Modifiers;
 class AC::Manager::Daemon
 with MooseX::Getopt
 {
+        use Log::Any qw($log);
         use Log::Any::Adapter;
         use AC::Manager;
         with 'MooseX::Daemonize';
@@ -39,11 +40,13 @@ with MooseX::Getopt
                 return unless $self->is_daemon;
                 
                 Log::Any::Adapter->set('File', $self->logfile());
+                $log->debug('AC::Manager::Daemon runnung');
                 $self->_manager()->run();
         }
 
-        before stop() {
+        before shutdown() {
                 return unless $self->is_daemon;
+                $log->debug('AC::Manager::Daemon shutting down');
                 $self->_manager()->finish();
         }
 }
