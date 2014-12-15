@@ -23,11 +23,11 @@ class Test::AC::Manager {
     method test_manager($class: ...) {
         # First create a test ZMQ publisher, so we can send events
         my $pub = ZMQx::Class->socket('PUB', bind => 'tcp://*:*');
-        my $port = $pub->getsockopt(ZMQ_LAST_ENDPOINT);
+        my $endpoint = $pub->getsockopt(ZMQ_LAST_ENDPOINT);
     
         # Test that it is possible to create a Manager object
         my $man = AC::Manager->new(
-            endpoint => "tcp://localhost:$port",
+            endpoint => $endpoint,
             plugins => ['+Test::AC::Manager_Plugin'],
         );
         ok($man, 'constructed manager');
