@@ -69,14 +69,34 @@ __PACKAGE__->table("kill");
   data_type: 'boolean'
   is_nullable: 0
 
-=head2 killer_pos
+=head2 killer_x
 
-  data_type: 'vec3_t'
+  data_type: 'real'
   is_nullable: 0
 
-=head2 victim_pos
+=head2 killer_y
 
-  data_type: 'vec3_t'
+  data_type: 'real'
+  is_nullable: 0
+
+=head2 killer_z
+
+  data_type: 'real'
+  is_nullable: 0
+
+=head2 victim_x
+
+  data_type: 'real'
+  is_nullable: 0
+
+=head2 victim_y
+
+  data_type: 'real'
+  is_nullable: 0
+
+=head2 victim_z
+
+  data_type: 'real'
   is_nullable: 0
 
 =cut
@@ -119,10 +139,18 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", is_nullable => 0 },
   "suicide",
   { data_type => "boolean", is_nullable => 0 },
-  "killer_pos",
-  { data_type => "vec3_t", is_nullable => 0 },
-  "victim_pos",
-  { data_type => "vec3_t", is_nullable => 0 },
+  "killer_x",
+  { data_type => "real", is_nullable => 0 },
+  "killer_y",
+  { data_type => "real", is_nullable => 0 },
+  "killer_z",
+  { data_type => "real", is_nullable => 0 },
+  "victim_x",
+  { data_type => "real", is_nullable => 0 },
+  "victim_y",
+  { data_type => "real", is_nullable => 0 },
+  "victim_z",
+  { data_type => "real", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -155,8 +183,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-12-13 14:06:06
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+y0n3Qa6GFyLI+kgeA13iw
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-12-15 21:47:13
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/MZmP/7ysfAtW79t5iMqiA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

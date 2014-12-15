@@ -15,6 +15,7 @@ __PACKAGE__->load_namespaces;
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-12-13 14:06:06
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gkC5Jbvo065TsdUL2M3MtA
 
-
+# Abstract for Dist::Zilla
+# ABSTRACT: The database schema for SquareStats
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
