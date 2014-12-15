@@ -5,6 +5,7 @@ use lib '../lib';
 use AC::Manager::Daemon;
 
 my $daemon = AC::Manager::Daemon->new_with_options();
+die 'Could not create daemon' unless $daemon;
  
 my ($command) = @{$daemon->extra_argv};
 defined $command || die "No command specified";

@@ -5,20 +5,17 @@ class AC::Manager::Daemon
 with MooseX::Getopt
 {
         use AC::Manager;
-        use MooseX::Types::Path::Class;
         with 'MooseX::Daemonize';
 
         has '_manager' => (
                 is => 'rw',
                 isa => 'AC::Manager',
-                lazy => 1,
-                builder => '_build_manager',
         );
 
         has 'configfile' => (
                 is => 'ro',
-                isa => 'Path::Class::File',
-                default => sub { '/etc/ac-manager.yaml' },
+                isa => 'Str',
+                default => '/etc/ac-manager.yaml',
         );
 
         after start() {
