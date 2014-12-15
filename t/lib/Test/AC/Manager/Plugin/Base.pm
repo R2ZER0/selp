@@ -10,15 +10,18 @@ class Test::AC::Mananger::Plugin::Base {
 
         method test_constructor() {
                 my $success = 1;
-                my $obj;
 
                 try {
-                        $obj = AC::Manager::Plugin::Base->new();
+                        my $obj = AC::Manager::Plugin::Base->new();
                 } catch {
                         $success = 0;
                 }
                 ok($success, 'construction succeeds');
-                isa_ok $obj, $class;
+        }
+        
+        method test_class() {
+            my $obj = AC::Manager::Plugin::Base->new();
+            isa_ok $obj, $class;
         }
 
         method test_has_run_finish_methods() {
