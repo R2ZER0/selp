@@ -21,22 +21,24 @@ class Test::AC::Manager {
     use AnyEvent;
     
     method test_manager($class: ...) {
+        $class->test_report->plan(5);
+        
         # First create a test ZMQ publisher, so we can send events
         my $pub = ZMQx::Class->socket('PUB', bind => 'tcp://*:*');
         my $endpoint = $pub->getsockopt(ZMQ_LAST_ENDPOINT);
     
-        # Test that it is possible to create a Manager object
+        #### Test that it is possible to create a Manager object ####
         my $man = AC::Manager->new(
             endpoint => $endpoint,
             plugins => ['+Test::AC::Manager_Plugin'],
         );
         ok($man, 'constructed manager');
     
-        # Test that it successfully loads our plugin
+        #### Test that it successfully loads our plugin ####
         my $plugin = $man->plugin_list->[0];
         isa_ok($plugin, 'Test::AC::Manager_Plugin');
         
-        # Test that it calls run/finish on our plugin
+        #### Test that it calls run/finish on our plugin ####
         my $w; $w = AnyEvent->idle(cb => sub {
             $man->finish();
             undef $w;
@@ -46,7 +48,12 @@ class Test::AC::Manager {
         ok($plugin->run_called, 'run called');
         ok($plugin->finish_called, 'finish called');        
         
-        # Test that it propagates events to our plugin
+        #### Test that it propagates events to our plugin ####
+        $man = AC::Manager->new(
+            endpoint => $endpoint,
+            plugins => ['+Test::AC::Manager_Plugin'],
+        );
+        
         my $kill_event_json = q{{
             "type": "kill",
             "killer": "killer",
@@ -65,14 +72,20 @@ class Test::AC::Manager {
             undef $w2;
         });
         
-        my $w3; $w3 = AnyEvent->idle(cb => sub {
-            if($plugin->on_kill_called or (not $waiting)) {
-                ok($plugin->on_event_called, 'on_kill event passed to plugin');
+        my $w3; $w3 = AnyEvent->timer(after => 0.1, interval => 0.1, cb => sub {
+            if($plugin->on_kill_called() or (not $waiting)) {
+                ok($plugin->on_kill_called(), 'on_kill event passed to plugin');
+                $man->finish();
                 undef $w3;
             }
         });
         
-        $pub->send($kill_event_json);
+        my $w4; $w4 = AnyEvent->idle(cb => sub {
+            $pub->send($kill_event_json);
+            undef $w4;
+        });
+        
+        $man->run();
         
     }
 }

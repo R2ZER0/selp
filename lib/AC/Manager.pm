@@ -19,14 +19,15 @@ with MooseX::SimpleConfig
                 $self->plugin_run_method('run');
                 $self->_subscribe(); # subscribe to events from the AC server
 
-                $self->_exit_condvar->recv; # run the event loop
+                $self->_exit_condvar( AnyEvent->condvar() );
+                $self->_exit_condvar->recv(); # run the event loop
 
-                $self->_on_finish;
+                $self->_on_finish();
         }
         
         # Method used to stop the manager
         method finish() {
-            $self->_exit_condvar->send;
+            $self->_exit_condvar->send();
         }
         
         # Required parameter: ZMQ endpoint to connect to
@@ -37,9 +38,8 @@ with MooseX::SimpleConfig
         );
         
         has '_exit_condvar' => (
-                is => 'ro',
+                is => 'rw',
                 isa => 'AnyEvent::CondVar',
-                default => sub { AnyEvent->condvar },
         );
         
         has '_subscriber' => (
