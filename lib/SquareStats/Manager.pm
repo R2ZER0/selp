@@ -4,6 +4,7 @@ use SquareStats::Declare;
 #           notifies the loaded plugins of each event.
 class SquareStats::Manager
 with MooseX::Role::Pluggable
+with MooseX::SimpleConfig
 {
         use AnyEvent;
         use ZMQx::Class;
