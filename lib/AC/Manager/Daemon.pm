@@ -19,7 +19,6 @@ with MooseX::Getopt
                 is => 'ro',
                 isa => 'Path::Class::File',
                 required => 1,
-                description => 'path to configuration file',
         );
                 
 
