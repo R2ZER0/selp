@@ -3,7 +3,6 @@ use Method::Signatures::Modifiers;
 
 # ABSTRACT: Collects and stores game statistics from AssaultCube servers
 class SquareStats::Collector
-with MooseX::SimpleConfig
 {
     use SquareStats::Schema;
     use Log::Any;
@@ -36,17 +35,20 @@ with MooseX::SimpleConfig
         # construct our schema (database access object), which in turn connects
         # to the database using the given dsn.
         $self->_schema();
+        
+        # Run the event loop - this works by blocking, waiting for something to
+        # send data to this condvar. We send in finish() to exit the loop again.
+        $self->_finish_condvar->recv;
     }
     
     method finish() {
-        # TODO 
+        $self->_finish_condvar->send;
     }
     
     
     # Private attributes
     has '_socket_watcher' => (
         is => 'ro',
-        isa => 'AnyEvent::IO',
         lazy => 1,
         builder => '_build_socket_watcher',
         clearer => '_clear_socket_watcher',
@@ -61,9 +63,16 @@ with MooseX::SimpleConfig
     
     has '_schema' => (
         is => 'ro',
-        isa => 'ZMQx::Class::Socket',
+        isa => 'SquareStats::Schema',
         lazy => 1,
         builder => '_build_schema',
+    );
+    
+    has '_finish_condvar' => (
+        is => 'ro',
+        isa => 'AnyEvent::CondVar',
+        lazy => 1,
+        default => sub { AnyEvent->condvar },
     );
     
     method _build_socket_watcher() {
@@ -86,6 +95,9 @@ with MooseX::SimpleConfig
     method _on_message($msg) {
         my $game = decode_json $msg;
         $self->_store_game($game);
+        $self->_socket->send(encode_json {
+            status => 'ok',
+        });
     }
     
     method _store_game($game) {
