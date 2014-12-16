@@ -102,7 +102,7 @@ class SquareStats::Collector
     
     method _store_game($game) {
         # I love whoever made DBIx::Class
-        $self->_schema()->populate('Game', $game);
+        $self->_schema()->populate('Game', [$game]);
     }
     
     
