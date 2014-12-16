@@ -28,6 +28,10 @@ with MooseX::Getopt
                 builder => '_build_manager',
         );
         
+        has '+stop_timeout' => (
+                default => sub { 10 },
+        );
+        
         # We have a lazy manager so that it will only be created once the daemon
         # has finished forking.
         method _build_manager() {
