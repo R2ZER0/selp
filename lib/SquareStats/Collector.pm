@@ -77,9 +77,12 @@ class SquareStats::Collector
     
     method _build_socket_watcher() {
         return $self->_socket()->anyevent_watcher( sub {
-            $self->_on_message(
-                $self->_socket()->receive()->[0]
-            );
+            # Strangely this callback seems to get called even if we haven't
+            # received something, so check that we actually have.
+            my $got = $self->_socket()->receive;
+            if($got) {
+                $self->_on_message($got->[0]);
+            }
         });
     }
     
