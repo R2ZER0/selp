@@ -1,1 +1,1 @@
-schema-0.004.sql
+schema-0.005.sql

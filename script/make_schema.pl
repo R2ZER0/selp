@@ -42,6 +42,7 @@ make_schema_at(
         {
                 debug => $debug,
                 dump_directory => './lib',
+                skip_load_external => 1,
         },
         [$dsn, "", "", {}],
 );
