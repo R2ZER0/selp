@@ -15,6 +15,8 @@ __PACKAGE__->load_namespaces;
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-12-13 14:06:06
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gkC5Jbvo065TsdUL2M3MtA
 
+our $VERSION = '0.004';
+
 # ABSTRACT: 
 # This distribution contains the mostly auto-generated DBIx::Class based schema
 # for SquareStats. All the class files are generated from the actual PostgreSQL
