@@ -4,20 +4,18 @@ use warnings;
 
 use Pod::Usage;
 use Getopt::Long;
+use File::Slurp qw/ read_file /;
 use DBIx::Class::Schema::Loader qw/ make_schema_at /;
+use Test::PostgreSQL;
 
-my $host = '';
-my $user = '';
-my $pass = '';
-my $db = 'squarestats';
-my $debug = '';
+my $dsn = '';
+my $from = 'share/sql/schema.sql';
+my $debug = 0;
 my $help = 0;
 
 GetOptions(
-        "host|h=s" => \$host,
-        "username|u=s" => \$user,
-        "password|p=s" => \$pass,
-        "database|d=s" => \$db,
+        "dsn=s" => \$dsn,
+        "from=s" => \$from,
         "debug!" => \$debug,
         "help" => \$help,
 );
@@ -27,17 +25,25 @@ if($help) {
         exit();
 }
 
-my $dsn = 'dbi:Pg:';
-$dsn .= "dbname=$db;" if $db;
-$dsn .= "host=$host;" if $host;
+my $pgsql;
+if(not $dsn) {
+        $pgsql = Test::PostgreSQL->new();
+        $dsn = $pgsql->dsn;
+}
+
+if($from) {
+        my $sql = read_file($from);
+        print $sql;
+        DBI->connect($dsn,'','',{})->do( $sql, {} );
+}
 
 make_schema_at(
         'SquareStats::Schema',
         {
-                debug => 1,
+                debug => $debug,
                 dump_directory => './lib',
         },
-        [$dsn, "$user", "$pass", {}],
+        [$dsn, "", "", {}],
 );
 
 __END__
@@ -65,8 +71,8 @@ SquareStats::Schema::Result::* modules from the given database. The database
 must have been previously initialised. The modules will be output into the
 'lib' directory, based on the current working directory.
 
-By default this connects to a server on localhost, using the system user, and
-looks at the database 'squarestats'.
+By default this creates a temporary database, and loads a schema from
+share/sql/schema.sql
 
 =cut
 
