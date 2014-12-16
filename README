@@ -1,0 +1,11 @@
+SquareStats-Schema
+==================
+
+This distribution contains the mostly auto-generated DBIx::Class based schema
+for SquareStats. All the class files are generated from the actual PostgreSQL
+schema defined in share/sql/sqarestats-schema.sql.
+Use databases other than PostgreSQL has not been tested nor is supported.
+
+Copyright 2014 Rikki Guy <dist@rikkiguy.me.uk>
+
+Created for Software Engineering Large Practical.
