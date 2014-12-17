@@ -1,1 +1,20 @@
-[% META title = 'Leaderboard' %]
+[% META title = 'Leaderboard' -%]
+
+<h2 class="content-subhead">Top 10 Fraggers</h2>
+<table class="pure-table pure-table-horizontal pure-table-striped">
+    <thead>
+        <tr>
+            <th>Nick</th>
+            <th>Frags</th>
+        <tr>
+    </thead>
+    <tbody>
+        [% FOREACH leader in leaders -%]
+            <tr>
+                <td>[% leader.killer %]</td>
+                <td>[% leader.frags %]</td>
+            </tr>
+        [% END -%]
+        
+    </tbody>
+</table>
