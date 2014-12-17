@@ -28,11 +28,22 @@ The root page (/)
 
 =cut
 
-sub index :Path :Args(0) {
+sub index :Global :Args(0) {
     my ( $self, $c ) = @_;
 
-    # Hello World
-    $c->response->body( $c->welcome_message );
+    $c->redirect('/leaderboard');
+}
+
+=head2 leaderboard
+
+A leaderboard of the top scorers
+
+=cut
+
+sub leaderboard :Global {
+    my ( $self, $c ) = @_;
+    
+    $c->stash(template => 'leaderboard.tt');
 }
 
 =head2 default
