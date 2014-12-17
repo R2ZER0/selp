@@ -19,6 +19,7 @@ class Test::AC::Manager::Daemon {
         
         my $config_file = catfile( $dir, "config.yaml" );
         my $pid_file    = catfile( $dir, "daemon.pid" );
+        my $log_file    = catfile( $dir, "daemon.log" );
         
         # Create a test socket
         # We have to fork to do this, due to a bug in libzmq which crashes the
@@ -45,7 +46,9 @@ class Test::AC::Manager::Daemon {
         
         # Spawn the daemon!
         my $daemon = AC::Manager::Daemon->new(
-            pidbase => $dir, configfile => $config_file
+            pidbase => $dir,
+            configfile => $config_file,
+            logfile => $log_file,
         );
         
         daemonize_ok( $daemon, 'daemon forked okay' );
