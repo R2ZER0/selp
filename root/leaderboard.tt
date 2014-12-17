@@ -6,13 +6,17 @@
         <tr>
             <th>Nick</th>
             <th>Frags</th>
+            <th>Gibs</th>
+            <th>Score</th>
         <tr>
     </thead>
     <tbody>
-        [% FOREACH leader in leaders -%]
+        [% FOREACH player IN leaders -%]
             <tr>
-                <td>[% leader.killer %]</td>
-                <td>[% leader.frags %]</td>
+                <td>[% player.nick %]</td>
+                <td>[% player.frags %]</td>
+                <td>[% player.gibs %]</td>
+                <td>[% player.total_score %]</td>
             </tr>
         [% END -%]
         
