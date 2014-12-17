@@ -28,7 +28,7 @@ The root page (/)
 
 =cut
 
-sub index :Global :Args(0) {
+sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
     $c->redirect('/leaderboard');
