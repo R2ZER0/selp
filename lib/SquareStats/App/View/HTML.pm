@@ -7,6 +7,8 @@ extends 'Catalyst::View::TT';
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.tt',
     render_die => 1,
+    TIMER => 1, # Show timer stats in comments
+    WRAPPER => 'wrapper.tt', # Set the main wrapper template
 );
 
 =head1 NAME
