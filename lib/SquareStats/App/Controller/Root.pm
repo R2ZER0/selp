@@ -43,6 +43,20 @@ A leaderboard of the top scorers
 sub leaderboard :Global {
     my ( $self, $c ) = @_;
     
+    my $topten = $c->model('SS::Kill')->search({
+        -and => [
+            suicide => 'FALSE',
+            gib => 'FALSE',
+        ]
+    }, {
+        select => [ 'killer', { count => 'id' } ],
+        as => [qw/ killer kills /],
+        group_by => 'killer',
+        order_by => 'kills',
+        rows => 10,
+    });
+    
+    $c->stash(leaders => $topten);
     $c->stash(template => 'leaderboard.tt');
 }
 
