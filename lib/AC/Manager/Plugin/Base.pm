@@ -16,4 +16,12 @@ with MooseX::Role::Pluggable::Plugin
         method on_kill(HashRef $event) {
                 # Someone has been killed!
         }
+        
+        method on_game_start(HashRef $event) {
+                # The game has begun
+        }
+        
+        method on_game_end(HashRef $event) {
+                # The game has finished
+        }
 }
