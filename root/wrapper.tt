@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SquareStats, a statistics/ranking website for AssaultCube">
+
+    <title>[% template.title or "SquareStats" %]</title>
+
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+    
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="[% c.uri_for('/static/css/layout-old-ie.css') %]">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="[% c.uri_for('/static/css/layout.css') %]">
+    <!--<![endif]-->
+    
+    <!--[if lt IE 9]>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+
+    <div id="layout">
+        <!-- Menu toggle -->
+        <a href="#menu" id="menuLink" class="menu-link">
+            <!-- Hamburger icon -->
+            <span></span>
+        </a>
+
+        <div id="menu">
+            <div class="pure-menu pure-menu-open">
+                <a class="pure-menu-heading" href="#">SquareStats</a>
+
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+
+                    <li class="menu-item-divided pure-menu-selected">
+                        <a href="#">Services</a>
+                    </li>
+
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="main">
+            <div class="header">
+                <h1>[% template.title or "SquareStats" %]</h1>
+                <h2>A subtitle for your page goes here</h2>
+            </div>
+
+            <div class="content">
+                [% content %]
+            </div>
+        </div>
+    </div>
+
+
+    <script src="[% c.uri_for('/static/js/ui.js') %]"></script>
+
+
+</body>
+</html>
