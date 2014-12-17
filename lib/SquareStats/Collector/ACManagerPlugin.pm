@@ -6,6 +6,8 @@ extends AC::Manager::Plugin::Base
 {
     use MooseX::Types::Set::Object;
     use JSON::XS;
+    use DateTime;
+    use DateTime::Format::Pg qw/format_timestamp_with_time_zone/;
 
     has 'endpoint' => (
         is => 'ro',
@@ -37,13 +39,20 @@ extends AC::Manager::Plugin::Base
         $self->_socket()->close();
     }
     
-    # We are starting a new game, get rid of existing stats
+    # We are starting a new game, replace the game info
     override on_game_start($game) {
+        $game->{'server'} = $self->server_name();
+        $game->{'start_time'} = format_timestamp_with_time_zone(
+            DateTime->now(timezone=>'Europe/London')
+        );
         $self->_game($game);
     }
     
     override on_game_end() {
         my $game = $self->_game();
+        $game->{'end_time'} = format_timestamp_with_time_zone(
+            DateTime->now(timezone=>'Europe/London')
+        );
         $game->{'kills'} = $self->_kills();
         $self->_socket()->send(encode_json $game);
     }
