@@ -14,6 +14,14 @@ extends AC::Manager::Plugin::Base
         documentaton => 'The ZMQ endpoint of the Collector',
     );
     
+    # This is the name given as "server": "<name>" in the game data.
+    has 'server_name' => (
+        is => 'ro',
+        isa => 'Str',
+        required => 1,
+        documentaton => 'The name of this server',
+    );
+    
     # Initialise our plugin
     override run() {
         $self->_socket_watcher();
