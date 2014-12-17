@@ -51,7 +51,7 @@
         <div id="main">
             <div class="header">
                 <h1>[% template.title or "SquareStats" %]</h1>
-                <h2>A subtitle for your page goes here</h2>
+                <h2>www.SquareStats.uk</h2>
             </div>
 
             <div class="content">
