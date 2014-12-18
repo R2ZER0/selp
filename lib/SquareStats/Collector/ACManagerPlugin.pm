@@ -43,15 +43,15 @@ extends AC::Manager::Plugin::Base
     override on_game_start($game) {
         $game->{'server'} = $self->server_name();
         $game->{'start_time'} = DateTime::Format::Pg->format_timestamp_with_time_zone(
-            DateTime->now(timezone=>'Europe/London')
+            DateTime->now(time_zone=>'Europe/London')
         );
         $self->_game($game);
     }
     
-    override on_game_end() {
+    override on_game_end($event) {
         my $game = $self->_game();
         $game->{'end_time'} = DateTime::Format::Pg->format_timestamp_with_time_zone(
-            DateTime->now(timezone=>'Europe/London')
+            DateTime->now(time_zone=>'Europe/London')
         );
         $game->{'kills'} = $self->_kills();
         $self->_socket()->send(encode_json $game);
@@ -82,7 +82,7 @@ extends AC::Manager::Plugin::Base
     # ZMQ REQ socket connecting to the Collector
     has '_socket' => (
         is => 'ro',
-        isa => 'ZMQx::Socket',
+        isa => 'ZMQx::Class::Socket',
         lazy => 1,
         builder => '_build_socket',
     );
@@ -96,6 +96,7 @@ extends AC::Manager::Plugin::Base
         is => 'ro',
         lazy => 1,
         builder => '_build_socket_watcher',
+        clearer => '_clear_socket_watcher',
     );
     
     method _build_socket_watcher() {
