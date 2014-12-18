@@ -58,6 +58,7 @@ extends AC::Manager::Plugin::Base
     }
     
     override on_kill($kill) {
+        undef $kill->{'type'};
         $self->_add_kill($kill);
     }
 
