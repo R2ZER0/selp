@@ -41,6 +41,7 @@ extends AC::Manager::Plugin::Base
     
     # We are starting a new game, replace the game info
     override on_game_start($game) {
+        undef $game->{'type'};
         $game->{'server'} = $self->server_name();
         $game->{'start_time'} = DateTime::Format::Pg->format_timestamp_with_time_zone(
             DateTime->now(time_zone=>'Europe/London')
