@@ -9,19 +9,19 @@ extends AC::Manager::Plugin::Base
     use DateTime;
     use DateTime::Format::Pg;
 
+    # The ZMQ endpoint of the Collector
     has 'endpoint' => (
         is => 'ro',
         isa => 'Str',
         required => 1,
-        documentaton => 'The ZMQ endpoint of the Collector',
     );
     
-    # This is the name given as "server": "<name>" in the game data.
+    # The name of the server
+    # This is the name given as "server": "<name>" in the game_start event
     has 'server_name' => (
         is => 'ro',
         isa => 'Str',
         required => 1,
-        documentaton => 'The name of this server',
     );
     
     # Initialise our plugin
