@@ -7,7 +7,7 @@ extends AC::Manager::Plugin::Base
     use MooseX::Types::Set::Object;
     use JSON::XS;
     use DateTime;
-    use DateTime::Format::Pg qw/format_timestamp_with_time_zone/;
+    use DateTime::Format::Pg;
 
     has 'endpoint' => (
         is => 'ro',
@@ -42,7 +42,7 @@ extends AC::Manager::Plugin::Base
     # We are starting a new game, replace the game info
     override on_game_start($game) {
         $game->{'server'} = $self->server_name();
-        $game->{'start_time'} = format_timestamp_with_time_zone(
+        $game->{'start_time'} = DateTime::Format::Pg->format_timestamp_with_time_zone(
             DateTime->now(timezone=>'Europe/London')
         );
         $self->_game($game);
@@ -50,7 +50,7 @@ extends AC::Manager::Plugin::Base
     
     override on_game_end() {
         my $game = $self->_game();
-        $game->{'end_time'} = format_timestamp_with_time_zone(
+        $game->{'end_time'} = DateTime::Format::Pg->format_timestamp_with_time_zone(
             DateTime->now(timezone=>'Europe/London')
         );
         $game->{'kills'} = $self->_kills();
