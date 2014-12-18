@@ -44,7 +44,7 @@ sub leaderboard :Global {
     my ( $self, $c ) = @_;
     
     $c->stash(leaders => [ $c->model('SS::ScoreMatrixOsok')->search({}, {
-        order_by => 'total_score',
+        order_by => { -desc => 'total_score' },
         rows => 10,
         page => 1,
     })]);
