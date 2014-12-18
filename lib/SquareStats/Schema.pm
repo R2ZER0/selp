@@ -17,8 +17,7 @@ __PACKAGE__->load_namespaces;
 
 our $VERSION = 5;
 
-# ABSTRACT: 
-# This distribution contains the mostly auto-generated DBIx::Class based schema
+# ABSTRACT:  This distribution contains the mostly auto-generated DBIx::Class based schema
 # for SquareStats. All the class files are generated from the actual PostgreSQL
 # schema defined in share/sql/sqarestats-schema.sql.
 # Use databases other than PostgreSQL has not been tested nor is supported.
