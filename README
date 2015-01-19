@@ -1,0 +1,179 @@
+SquareStats
+===========
+
+This project is a stats system, designed to collect stats from the multiplayer
+first-person shooter [AssaultCube](http://assault.cubers.net/), and ultimately
+display rankings via a web app.
+
+Lay of the Land
+===============
+
+This directory contains five repos:
+
+AC              - The modified AssaultCube server
+AC-Manager      - The 'manager daemon' that connects to the AC server
+SquareStats-Schema - The database schema for Collector and App
+SquareStats-Collector - The 'collector daemon' that connects to the manager and
+                        stores things in the database
+SquareStats-App - The web app
+
+
+Then there is the scripts directory, containing some useful scripts, and dists
+containing release builds of some of the components for easy installing.
+
+report.pdf is the report.
+
+
+How to install
+==============
+
+Two stages: 1) installing Perlbrew, which is akin to Python's virtualenv
+            2) install dependencies of the project
+
+This is all packaged into install.sh, so go ahead and run that:
+
+./scripts/install.sh && ./scripts/install-extra.sh
+
+install.sh installs everything needed to run the web app with sample data,
+install-extra.sh installs the extra things needed to run the Manager and
+Collector, if you want to run those.
+
+It could take up to an hour to run (sorry). I recommend reading the report, or
+browsing the source, or brushing up on AssaultCube skills while it happens.
+
+Where is all the code?
+======================
+
+Each of the repos (except AC) has a standard layout, lib is where the modules
+are kept (where you most likely want to look), t is where the tests are kept.
+
+AC
+--
+
+AC contains the sources of assaultcube, plus my extras/modifications.
+You want to be looking mostly in AC/source/src/squarestats, I also modified
+AC/source/src/server.cpp to add the event hooks.
+I found it was neither easy not fun to get assaultcube to compile on DICE, so I
+have included prebuild executables: /bin_unix/native_server,
+and /source/t/ss_event_json.t .
+
+Note that that the git repository was over 500MB, despite my attempts to reduce
+its size, so I have just submitted the latest snapshot.
+
+
+AC-Manager
+----------
+
+The manager has three modules:
+AC::Manager
+        The actual manager, that receives events on the socket, and calls the
+        relevant method on all the loaded plugins.
+        It composes MooseX::Role::Pluggable to automatically give it the ability
+        to load plugins.
+AC::Manager::Daemon
+        A wrapper for Manager, that enables running as a background daemon, with
+        pidfile management. Meant to be used in conjunction with init-script
+        like script/ac-manager.pl and conf/sample.yaml for easy management.
+AC::Manager::Plugin::Base
+        An example plugin implementing all the (known) available event methods.
+
+A note on convention - if you hadn't guessed already, for example 
+AC::Manager::Daemon  maps to  lib/AC/Manager/Daemon.pm
+
+An example of how the Manager can be run without the Daemon or config file can
+be found in /scripts/run-managel.pl
+
+SquareStats-Schema
+------------------
+The main thing to look at here is the SQL schema in share/sql/schema.sql
+Everything in lib is automatically generated from the SQL schema.
+These are the class files defining the schema in the format that DBIx::Class
+(the ORM I am using) wants.
+
+SquareStats-Collector
+---------------------
+
+SS::Collector
+        Takes in game definitions on the socket, and stores them into the
+        database. Quite simple really!
+SS::Collector::ACManagerPlugin
+        This, as the name suggests, is the plugin for AC::Manager that gathers
+        the game data and sends it to the Collector.
+
+No daemon here, see /scripts/run-collector.pl for an example of how it is run.
+
+SquareStats-App
+---------------
+The web App: Follows the standard Model-View-Controller.
+Since this is such a simple website, there is one model, one view and one
+controller.
+The only page so far is the Leaderboard.
+The classes can be found as SquareStats::App::Model::SS, which is a model that
+uses SquareStats-Schema; SquareStats::App::View::HTML which is a simple view that
+renders a Template::Toolkit based page, and SquareStats::App::Controller::Root,
+which selects the top ten scorers from Model::SS and passes the list on to the
+View::HTML.
+
+Running Things
+==============
+
+Note: whenever opening a new terminal, you will need to run:
+               source scripts/activate-env.sh
+
+First of all you need a PostgreSQL server to work on, create a temporary
+local one by running: scripts/run-db.pl
+
+        If you get the message of 'We got a different DSN than expected!'
+        (DSN is the database connection string), then to allow the web app to
+        use it, open up SquareStats-App/lib/SquareStats/App/Model/SS.pm
+        and replace the DSN in there with the one printed by run-db.
+
+Then once you have a database, setup the tables with: scripts/setup-db.pl
+
+What next depends on wether you are just running the webserver, or the full
+stack of components. For just the website, scripts/populate-db.pl will generate
+some random games and put them in the database.
+(You can always restart and setup the database to get a blank slate again.)
+
+To run the web app:
+cd SquareStats-App
+perl Makefile.PL
+script/squarestats_app_server.pl
+
+To run the full-stack, you will need to also run the AC server, the Manager and
+the Collector. I have created scripts to run these preconfigured, so each in a
+new terminal:
+
+The AC server: cd AC/ && sh server.sh
+
+The Manager: scripts/run-manager.pl
+
+The Collector: scripts/run-collector.pl
+
+It doesn't matter which order you start them in, they will automagically connect
+to each other.
+Next, you (and/or someone else) would have to join the game server in order to
+generate the game_start/kill/game_end events. Unfortunately, writing a test
+client for assaultcube would be very difficult, so there is no way to completely
+test the full stack other than playing a game or two.
+(In-game, one can join a server by presing '/' and typing '/connect hostname' )
+
+You can get AssultCube from: http://assault.cubers.net/download.html
+Click the penguin, extract the tar, and run ./assaultcube.sh -t
+
+
+Running tests
+-------------
+
+For Manager/Collector: cd into the directory, then run 'dzil test'
+AC: run source/src/ss_event_json.t (it is an executable)
+Schema doesn't have any tests, it is auto-generated from the SQL schema
+
+
+Cleaning Up
+-----------
+
+To remove the Perlbrew environment, and all installed modules, simply:
+rm -r ~/perl5 ~/.perlbrew
+
+Thanks!
