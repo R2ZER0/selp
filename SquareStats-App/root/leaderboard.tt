@@ -1,0 +1,24 @@
+[% META title = 'Leaderboard' -%]
+
+<h2 class="content-subhead">Top 10 Fraggers</h2>
+<table class="pure-table pure-table-horizontal pure-table-striped">
+    <thead>
+        <tr>
+            <th>Nick</th>
+            <th>Frags</th>
+            <th>Gibs</th>
+            <th>Score</th>
+        <tr>
+    </thead>
+    <tbody>
+        [% FOREACH player IN leaders -%]
+            <tr>
+                <td>[% player.nick %]</td>
+                <td>[% player.frags %]</td>
+                <td>[% player.gibs %]</td>
+                <td>[% player.total_score %]</td>
+            </tr>
+        [% END -%]
+        
+    </tbody>
+</table>
